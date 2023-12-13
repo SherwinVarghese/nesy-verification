@@ -3,7 +3,7 @@ import torch.nn as nn
 
 
 class SimpleEventCNN(nn.Module):
-    def __init__(self, num_classes):
+    def __init__(self, num_classes, log_softmax: bool = True):
         super().__init__()
         self.conv1 = nn.Conv2d(1, 8, (3, 3))
         self.conv2 = nn.Conv2d(8, 16, (3, 3))
@@ -11,7 +11,11 @@ class SimpleEventCNN(nn.Module):
         self.relu = nn.ReLU()
         self.avg_pool = nn.AvgPool2d(2, 2)
         self.dense = nn.Linear(in_features=32, out_features=num_classes)
-        self.softmax = nn.LogSoftmax(dim=1)
+        self.log_softmax = log_softmax
+        if log_softmax:
+            self.softmax = nn.LogSoftmax(dim=1)
+        else:
+            self.softmax = nn.Softmax(dim=1)
 
     def forward(self, input_image):
         x = self.avg_pool(self.relu(self.conv1(input_image)))

@@ -89,10 +89,10 @@ class BoundLogSoftmax(Bound):
         assert self.option != 'complex'
         assert self.perturbed
         h_L, h_U = v[0]
-        shift = h_U.max(dim=self.axis, keepdim=True).values
+        shift = h_U.max(dim=self.1axis, keepdim=True).values
         exp_L, exp_U = torch.exp(h_L - shift), torch.exp(h_U - shift)
         lower = exp_L / (torch.sum(exp_U, dim=self.axis, keepdim=True) - exp_U + exp_L + epsilon)
         upper = exp_U / (torch.sum(exp_L, dim=self.axis, keepdim=True) - exp_L + exp_U + epsilon)
         lower = torch.log(lower)
-        upper = torch.log(lower)
+        upper = torch.log(upper)
         return lower, upper

@@ -10,7 +10,9 @@ from data_utils import MNISTSimpleEvents
 
 dataset = MNISTSimpleEvents()
 
-train_dataset, test_dataset = random_split(dataset, [0.8, 0.2])
+N = len(dataset)
+N_test = int(N * 0.2)
+train_dataset, test_dataset = random_split(dataset, [N - N_test, N_test])
 train_dl = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_dl = DataLoader(test_dataset, batch_size=32, shuffle=True)
 
@@ -77,4 +79,4 @@ for epoch in range(num_epochs):
         )
     )
 
-torch.save(cnn.state_dict(), os.path.join(os.getcwd(), 'nesy_verification/saved_models/cnn_no_softmax.pt'))
+torch.save(cnn.state_dict(), os.path.join(os.getcwd(), 'nesy_verification/saved_models/cnn_no_softmax____.pt'))
