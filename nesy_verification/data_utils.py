@@ -28,10 +28,13 @@ class MNISTSimpleEvents(Dataset):
         return len(self.images)
 
     def __getitem__(self, idx):
-        return (
-            self.normalise(self.transform(self.images[idx]).float()),
-            torch.tensor([float(label) for label in self.simple_event_labels[idx]]),
-        )
+        try:
+            return (
+                self.normalise(self.transform(self.images[idx]).float()),
+                torch.tensor([float(label) for label in self.simple_event_labels[idx]]),
+            )
+        except Exception:
+            x = 1
 
 
 def get_mnist_sequences():

@@ -16,7 +16,7 @@ from models import SimpleEventCNN, SimpleEventCNNnoSoftmax
 NUM_MAGNITUDE_CLASSES = 3
 NUM_PARITY_CLASSES = 2
 PRINT = True
-NUM_SAMPLES = 10
+NUM_SAMPLES = 20
 
 def bound_softmax(h_L, h_U):
     """Given lower and upper input bounds into a softmax, calculate their concrete output bounds."""
@@ -38,7 +38,7 @@ def calculate_bounds(model: torch.nn.Module, dataloader):
         is_magnitude_classification
     """
 
-    epsilons = [0.5, 0.1, 0.01]
+    epsilons = [0.01]
     for eps in epsilons:
 
         num_magnitude_samples_verified = 0
@@ -91,21 +91,33 @@ def calculate_bounds(model: torch.nn.Module, dataloader):
 
                         lb_magnitude, ub_magnitude = bound_softmax(lb[:, :3], ub[:, :3])  # TODO EdS: Why is this not the same as having a softmax output
 
+                        truth_idx = int(magnitude_test_labels[i])
+
+                        if (lb_magnitude[:, :3][i][truth_idx] > torch.cat((ub_magnitude[:, :3][i][:truth_idx], ub_magnitude[:, :3][i][truth_idx + 1:]))).all().item():
+                            safe = True
+                            num_magnitude_samples_safe += 1
+                        else:
+                            safe = False
+
                         if PRINT:
                             for j in range(NUM_MAGNITUDE_CLASSES):
                                 indicator = "(ground-truth)" if j == magnitude_test_labels[i] else ""
+                                pred_indicator = "(prediction)" if j == magnitude_pred_labels[i] else ""
+                                safe_indicator = "(safe)" if j == magnitude_test_labels[i] and safe else ""
                                 print(
-                                    "f_{j}(x_0): {l:8.3f} <= f_{j}(x_0+delta) <= {u:8.3f} {ind}".format(
-                                        j=j, l=lb_magnitude[i][j].item(), u=ub_magnitude[i][j].item(), ind=indicator
+                                    "f_{j}(x_0): {l:8.3f} <= f_{j}(x_0+delta) <= {u:8.3f} {ind} {pred} {safe}".format(
+                                        j=j, l=lb_magnitude[i][j].item(), u=ub_magnitude[i][j].item(), ind=indicator, pred=pred_indicator, safe=safe_indicator
                                     )
                                 )
 
-                        truth_idx = int(magnitude_test_labels[i])
-                        if (lb_magnitude[:, :3][0][truth_idx] > torch.cat((ub_magnitude[:, :3][0][:truth_idx], ub_magnitude[:, :3][0][truth_idx + 1:]))).all().item():
-                            num_magnitude_samples_safe += 1
+                            # if (lb_magnitude[:, :3][0][truth_idx] > torch.cat((ub_magnitude[:, :3][0][:truth_idx], ub_magnitude[:, :3][0][truth_idx + 1:]))).all().item():
+                            #     num_magnitude_samples_safe += 1
+                            x = 1
 
-            if dl_idx == NUM_SAMPLES:
-                break
+                print()
+
+            # if dl_idx == NUM_SAMPLES:
+            #     break
             # Then handle parity verification
             # for i in range(len(magnitude_test_labels)):
             #     print(
@@ -131,6 +143,7 @@ def calculate_bounds(model: torch.nn.Module, dataloader):
 
                 # TODO EdS: Now do parity lb_parity, ub_parity = bound_softmax(lb[:, 3:], ub[:, 3:])
 
+        print(f"----\nSUMMARY\n----")
         print(f"For the method: {method}")
         print(f"Num magnitude samples verified: {num_magnitude_samples_verified}")
         print(f"Num magnitude samples correctly classified: {num_magnitude_samples_correctly_classified}")
@@ -172,7 +185,7 @@ if __name__ == "__main__":
     # dummy_dataset = torch.utils.data.Subset(dataset, dummy_indices)
     N = len(dataset)
 
-    test_dl = DataLoader(test_dataset, batch_size=1)
+    test_dl = DataLoader(test_dataset, batch_size=32)
 
     cnn_with_softmax.eval()
 

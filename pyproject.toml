@@ -16,7 +16,6 @@ pylint = "^3.0.2"
 torchvision = "^0.13.0"
 scikit-learn = "^1.3.2"
 auto-lirpa = { path = "/Users/edward/github/imperial/nesy-verification/auto_LiRPA" }
-
 tqdm = "*"
 
 [tool.poetry.dev-dependencies]

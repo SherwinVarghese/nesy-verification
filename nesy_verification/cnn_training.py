@@ -30,7 +30,13 @@ log_cnn = SimpleEventCNN(num_classes=5, log_softmax=True)
 softmax_cnn = SimpleEventCNN(num_classes=5, log_softmax=False)
 no_softmax_cnn = SimpleEventCNNnoSoftmax(num_classes=5)
 
-for cnn, model_name, loss_function in [(log_cnn, "log_softmax", nn.NLLLoss()), (softmax_cnn, "softmax", nn.NLLLoss()), (no_softmax_cnn, "no_softmax", nn.CrossEntropyLoss())]:
+models = [
+    # (log_cnn, "log_softmax", nn.NLLLoss()),
+    (softmax_cnn, "softmax", nn.NLLLoss()),
+    # (no_softmax_cnn, "no_softmax", nn.CrossEntropyLoss())
+]
+
+for cnn, model_name, loss_function in models:
     optimizer = optim.Adam(cnn.parameters(), lr=1e-3)
 
     for epoch in range(num_epochs):
