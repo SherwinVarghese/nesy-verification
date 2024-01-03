@@ -1,0 +1,10 @@
+{
+    "method": "IBP",
+    "num_magnitude_samples_verified": "2562",
+    "num_magnitude_samples_correctly_classified": "2512",
+    "num_magnitude_samples_safe": "968",
+    "num_parity_samples_verified": "2562",
+    "num_parity_samples_correctly_classified": "2533",
+    "num_parity_samples_safe": "1167",
+    "epsilon": "0.1"
+}

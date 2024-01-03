@@ -14,6 +14,7 @@ N = len(dataset)
 N_test = int(N * 0.2)
 train_dataset, test_dataset = random_split(dataset, [N - N_test, N_test])
 
+# TODO EdS: Instead of the below, import the same indices as used in cnn_training_no_softmax.py
 train_indices = train_dataset.indices
 test_indices = test_dataset.indices
 dummy_indices = test_dataset.indices[0]

@@ -13,6 +13,15 @@ dataset = MNISTSimpleEvents()
 N = len(dataset)
 N_test = int(N * 0.2)
 train_dataset, test_dataset = random_split(dataset, [N - N_test, N_test])
+
+train_indices = [dataset.indices[i] for i in train_dataset.indices]
+test_indices = [dataset.indices[i] for i in test_dataset.indices]
+dummy_indices = dataset.indices[test_dataset.indices[0]]
+
+torch.save(train_indices, os.path.join(os.getcwd(), 'saved_models/icl/train_indices.pt'))
+torch.save(test_indices, os.path.join(os.getcwd(), 'saved_models/icl/test_indices.pt'))
+torch.save(dummy_indices, os.path.join(os.getcwd(), 'saved_models/icl/dummy_indices.pt'))
+
 train_dl = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_dl = DataLoader(test_dataset, batch_size=32, shuffle=True)
 
@@ -79,4 +88,4 @@ for epoch in range(num_epochs):
         )
     )
 
-torch.save(cnn.state_dict(), os.path.join(os.getcwd(), 'nesy_verification/saved_models/cnn_no_softmax____.pt'))
+    torch.save(cnn.state_dict(), os.path.join(os.getcwd(), 'saved_models/icl/cnn_no_softmax.pt'))
