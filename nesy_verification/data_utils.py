@@ -29,6 +29,7 @@ class MNISTSimpleEvents(Dataset):
 
     def __getitem__(self, idx):
         return (
+            self.images[idx].im.id,
             self.normalise(self.transform(self.images[idx]).float()),
             torch.tensor([float(label) for label in self.simple_event_labels[idx]]),
         )

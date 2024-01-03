@@ -35,7 +35,7 @@ for cnn, model_name, loss_function in [(log_cnn, "log_softmax", nn.NLLLoss()), (
 
     for epoch in range(num_epochs):
         train_losses = []
-        for train_inputs, train_labels in train_dl:
+        for _, train_inputs, train_labels in train_dl:
             train_outputs = cnn(train_inputs)
 
             # calculate the loss for the magnitude task (num < 3, 3 < num < 6, num > 6)
@@ -61,7 +61,7 @@ for cnn, model_name, loss_function in [(log_cnn, "log_softmax", nn.NLLLoss()), (
             all_parity_labels = []
             all_parity_outputs = []
 
-            for test_inputs, test_labels in test_dl:
+            for _, test_inputs, test_labels in test_dl:
                 test_outputs = cnn(test_inputs)
 
                 test_magnitude_loss = loss_function(test_outputs[:, :3], torch.argmax(test_labels[:, :3], dim=1))

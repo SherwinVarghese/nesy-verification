@@ -46,7 +46,7 @@ def calculate_bounds(model: torch.nn.Module, dataloader):
         num_magnitude_samples_safe = 0
         num_parity_samples_correctly_classified = 0
 
-        for dl_idx, (test_inputs, test_labels) in enumerate(dataloader):
+        for dl_idx, (image_ids, test_inputs, test_labels) in enumerate(dataloader):
 
             magnitude_test_labels = torch.argmax(test_labels[:, :3], dim=1)
             parity_test_labels = torch.argmax(test_labels[:, 3:], dim=1)
