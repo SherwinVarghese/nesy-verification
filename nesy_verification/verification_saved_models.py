@@ -15,6 +15,7 @@ from torch.utils.data import Dataset, Subset
 from torchvision.datasets import MNIST
 
 from models import SimpleEventCNN
+from nesy_verification.pgd import pgd
 
 BATCH_SIZE = 32
 NUM_MAGNITUDE_CLASSES = 3
@@ -113,7 +114,10 @@ def calculate_bounds(model: torch.nn.Module, dataloader, epsilon: float, method:
             x=(ptb_inputs,), method=method.split()[0]
         )
 
-        # First handle magnitude verification
+        attack_results = pgd(model, epsilon, inputs, labels, final_layer=False)
+        # num_successful_attacks = sum(not value for value in attacks_results)
+
+        # Iterate over each element in batch, first handling magnitude verification
         for i in range(len(magnitude_labels)):
             new_row = {"mnist_id": mnist_idx[i].item()}
 
@@ -135,6 +139,7 @@ def calculate_bounds(model: torch.nn.Module, dataloader, epsilon: float, method:
 
                 truth_idx = int(magnitude_labels[i])
 
+                # TODO EdS: refactor this method so magnitude and parity code separated
                 # Check that the lower bound of the truth class is greater than
                 # the upper bound of all other classes
                 if (
@@ -154,6 +159,15 @@ def calculate_bounds(model: torch.nn.Module, dataloader, epsilon: float, method:
                     num_magnitude_samples_safe += 1
                 else:
                     magnitude_safe = False
+
+                if attack_results[i] and magnitude_safe:
+                    a, adv_output, adv_input = pgd(model, epsilon, inputs, labels, final_layer=False, return_model_output=True)
+                    # print(f"For the input {np.array(inputs[i,0,...])}")
+                    # print(f"We have the classification {labels[i,...][:3]}")
+                    # print(f"We have the adv input {np.array(adv_input[i,0, ...])}")
+                    # print(f"We have the adv output: {adv_output[i,...]}")
+                    # raise Exception("Attack was successful but the bounds were not safe!")
+                    print("-------------------------------")
 
                 for j in range(NUM_MAGNITUDE_CLASSES):
                     indicator = "(ground-truth)" if j == magnitude_labels[i] else ""
